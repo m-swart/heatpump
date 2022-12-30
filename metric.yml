@@ -1,0 +1,43 @@
+metrics:
+  - name: heatpump_outdoor_temp_celcius
+    key: ID_WEB_Temperatur_TA
+    type: gauge
+  - name: heatpump_outdoor_temp_avg_celcius
+    key: ID_WEB_Mitteltemperatur
+    type: gauge
+  - name: heatpump_flow_in_temp_celcius
+    key: ID_WEB_Temperatur_TVL
+    type: gauge
+  - name: heatpump_flow_out_temp_celcius
+    key: ID_WEB_Temperatur_TRL
+    type: gauge
+  - name: heatpump_flow_out_target_temp_celcius
+    key: ID_WEB_Sollwert_TRL_HZ
+    type: gauge
+  - name: heatpump_hotwater_measured_celsius
+    key: ID_WEB_Temperatur_TBW
+    type: gauge
+  - name: heatpump_hotwater_target_celsius
+    key: ID_WEB_Einst_BWS_akt
+    type: gauge
+  - name: heatpump_groundsource_in_temp_celsius
+    key: ID_WEB_Temperatur_TWE
+    type: gauge
+  - name: heatpump_groundsource_out_temp_celsius
+    key: ID_WEB_Temperatur_TWA
+    type: gauge
+  - name: heatpump_operational_total_seconds
+    key: ID_WEB_Zaehler_BetrZeitWP
+    type: counter
+  - name: heatpump_operational_heating_seconds
+    key: ID_WEB_Zaehler_BetrZeitHz
+    type: counter
+  - name: heatpump_operational_hotwater_seconds
+    key: ID_WEB_Zaehler_BetrZeitBW
+    type: counter
+  - name: heatpump_operational_cooling_seconds
+    key: ID_WEB_Zaehler_BetrZeitKue
+    type: counter
+  - name: heatpump_compressor_impulses
+    key: ID_WEB_Zaehler_BetrZeitImpVD1
+    type: counter
