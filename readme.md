@@ -12,6 +12,12 @@ I had chosen to upload the program on Github, because it is serves as evidence a
 ## Heatpumps
 The heatpump is the source of my small report, or is the device the main program had to collect/ aks data from. A heatpump extracts heat from a cold source (air or ground) and transfers it to our houses (this process is able reversable). To perform this process, the heatpumps are installed with sensors, measuring metrics such as outside temperature, and to use that data to predict how much it needs to heat the house. The heatpump is able to do this because it has its own small program. Which the main program (Prometheus exporter) is communciating with, storing the data of all the "relevant" sensors. 
 
+## About the heatpump used
+The heatpump used for this experiment was the ground source heatpump, meaning the natural heat the heatpump collects is constant. This is because ground sources lay deep in the ground, and are not affected by the temperature climate above soil. The brand of the heatpump is the Alpha Innotec heatpump.
+
+
+## validity of the project
+
 
 
 ## General setup  
@@ -19,6 +25,7 @@ The following diagram provides an overview of the components in my setup.
 
 ![diagram](diagram.png)
 
+When collecting and displaying the data from the heatpump, at whole process needs to be runs behind the scene. furthermore can we see th
 
 ### Heatpump
 Alpha Innotec heatpump
