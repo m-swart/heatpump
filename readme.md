@@ -53,12 +53,12 @@ First I needed to analyse the metrics that can be requested from the heatpump co
 
 
 ## metric configuration 
-In the main program of the project, additional files were used because of the different reasons. One of these files contained the metrics used. Why? because it was easier to create/ configure the metrics in another file than have the metric configuration in the exporter program(main program). Which could create a lot of errors. Furthermore could the additional file for the metric configuration be written in another programming language. YAML was chosen because it is able to create configuration files with any programming language and designed for human interaction.
+In the main program of the project, additional files were used because of the different reasons. One of these files contained the metrics used. Why? because it was easier to create/ configure the metrics in another file than have the metric configuration in the exporter program(main program). Which could create a lot of errors. Furthermore could the additional file for the metric configuration be written in another programming language. YAML was chosen because it is able to create configuration files with any programming language and designed for human readability.
 
-https://github.com/m-swart/heatpump/blob/89292fa02aeb39303c1c5cff3516f7b67c08f38e/metric.yml
+https://github.com/m-swart/heatpump/blob/0b64a68b2c0fb870224c23b20c2f8e317ef1ed67/metric.yml
 
 As you can see, YAML made it very easy to define to the program what were all the metrics through 'metrics:', and were the symbol minus '-' used to define each individual metric. 
-
+```yaml
 metrics:
   - name: heatpump_outdoor_temp_celcius
     key: ID_WEB_Temperatur_TA
@@ -66,7 +66,7 @@ metrics:
 - name: heatpump_operational_total_seconds
     key: ID_WEB_Zaehler_BetrZeitWP
     type: counter
-
+```
 As seen in the YAML file, each metrics consist out of a name, key and type. The name is just the name given to the metric to identify it. Looking at the example, from the name we can understand the metric is the outdoor temperature measured by the heatpump. The key is the essentially the name/ key the program needs to use when asking the heatpump for data about the outdoor temperature. This is because the heatpump uses a programming language called Luxtronik, and otherwise the heatpump would not know what the program is asking for. As last is the type, meaning the type of data. In the whole file, the only types are guage and counter. Guage is value which is able to decrease or increase, such as temperature. Counter is a value which only able to increase, such as age.
 These types are important to display with the data, because otherwise prometheus does not understand how to store the data.
 
@@ -128,7 +128,9 @@ Line 22 is the end of the loop. Where the program is told to send the final resp
 
 
 ## Response
-curl localhost:5000/metrics
+The program returns the following output in the format expected by Prometheus. See [documentation](https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-example).
+
+```
 # TYPE heatpump_outdoor_temp_celcius gauge
 heatpump_outdoor_temp_celcius 8.9
 # TYPE heatpump_outdoor_temp_avg_celcius gauge
@@ -157,6 +159,7 @@ heatpump_operational_hotwater_seconds 12582318
 heatpump_operational_cooling_seconds 58770240
 # TYPE heatpump_compressor_impulses counter
 heatpump_compressor_impulses 37643
+```
 
 ## Grafana dashboard
 
