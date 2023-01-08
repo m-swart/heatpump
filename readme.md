@@ -38,7 +38,7 @@ Alpha Innotec heatpump
 
 ### Grafana Dashboards
 
-
+![boiler hotwater temperature](graphs/boiler_hotwater_temperature.png)
 
 
 All components except the heatpump itself are running on a tiny raspberry pi linux server in our 'meterkast'.
@@ -58,6 +58,7 @@ In the main program of the project, additional files were used because of the di
 https://github.com/m-swart/heatpump/blob/0b64a68b2c0fb870224c23b20c2f8e317ef1ed67/metric.yml
 
 As you can see, YAML made it very easy to define to the program what were all the metrics through 'metrics:', and were the symbol minus '-' used to define each individual metric. 
+
 ```yaml
 metrics:
   - name: heatpump_outdoor_temp_celcius
