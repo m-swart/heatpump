@@ -2,100 +2,111 @@
 
 
 ## Introduction
-The MYP personal project is a long term project held in grade 10. In the project, we should explore something which inspires or intrests us. My learning goal of this project is to program and able to process, analyse/ draw conclusions from data. Furthermore would I test my learning goal through creating a program which is able to store the data from the heat pump, and a small report analysing the trends given by the heat pump.
+The MYP personal project is a long term project held in grade 10. In the project, we should explore something which inspires or intrests us. My learning goal of this project is to program and be able to process, analyse/ draw conclusions from data. Furthermore would I like to test my learning goal by creating a program which is able to store the data from my home heat pump, creating dashboards from the data and by writing a short report analysing the trends that can be derived from the dashboards.
 
-I had chosen to upload the program on Github, because it is serves as evidence and it is easy to explain the program using this platform. Furthermore can it be useful for others, whom perphaps want to observe their heatpump's performance.
+I have chosen to upload the program and its documentation on Github, because it is serves as evidence and it is easy to explain the program using this platform. Furthermore can it be useful for others, whom perphaps want to observe their heatpump's performance.
 
+This pages describes the general working of my program. The [analysis page](./analysis.md) contains my observations regarding the data I collected.
+
+## About heatpumps
+The heatpump is the source of data for my dashboards and the device my program had to collect data from. 
+
+A heatpump extracts heat from a cold source (air or ground) to a warm space, making the cool source cooler and the warm space, our houses, warmer. This is the reverse process of an air conditioner. To optimize this process, the heatpumps are installed with sensors, measuring metrics such as outside temperature. These metrics are used to predict how much energy is needed to heat the house. 
+
+The heatpump is able to do this because it has its own little computer, also known as 'controller'. My program (Prometheus exporter) is communciating with this communicating with this heat pump controller to retrieve of all the "relevant" sensor data and store it in a metrics database. 
+
+The heatpump used for this experiment was a ground source heatpump, meaning that the source that the heatpump uses to extract heat from is relatively  constant. This is because ground sources lay deep in the ground, and are not affected by seasonal temperature changes like air heatpumps do. The brand of the heatpump is the Alpha Innotec.
 
 ## General setup  
+The ground source heatpump at my home continuously measures data using its own sensors. Examples are metrics like outside temperature and total operational time of the heatpump. However is sensore data measured by the heatpump is not stored (it was not built that way), making it difficult to properly analyse it's behaviour. Therefore, I created a program which retrieves and stores sensor data from the heatpump each hour. 
+
 The following diagram provides an overview of the components in my setup.
 
 ![diagram](diagram.png)
 
-When collecting and displaying the data from the heatpump, at whole process needs to be runs behind the scene. Summarizing this, a ground source heatpump at my home receives day-to-day data form its own sensors, such as temperature outside or total operational time of the heatpump. Which can be analysed and used for the sake of other people, whom maybe thinking about alternative energy sources. However is this data the heatpump receives not stored (it was not built that way). Therefore I created a program which could store and ask that information from the heatpump each hour. To automise this process, prometheus was used, which is an application that can collect and store metrics. To display these stored metrics, grafana dashboards was used, an application making dashboards (graphs) out of stored data.
+Each component is described shortly below:
 
-## Heatpumps
-The heatpump is the source of my small report, or is the device the main program had to collect/ aks data from. A heatpump extracts heat from a cold source (air or ground) and transfers it to our houses (this process is able reversable). To perform this process, the heatpumps are installed with sensors, measuring metrics such as outside temperature, and to use that data to predict how much it needs to heat the house. The heatpump is able to do this because it has its own small program. Which the main program (Prometheus exporter) is communciating with, storing the data of all the "relevant" sensors. 
+* **Heatpump**. The Alpha Innotec heatpump of our house, the source my metrics.
 
-## About the heatpump used
-The heatpump used for this experiment was the ground source heatpump, meaning the natural heat the heatpump collects is constant. This is because ground sources lay deep in the ground, and are not affected by the temperature climate above soil. The brand of the heatpump is the Alpha Innotec heatpump.
+* **Prometheus Exporter**. This represents to program I wrote. It retrieves sensor data from the heatpump and translates it to a format that is required by the Prometheus metrics database I used. To creae this program. first I needed to analyse the metrics that can be requested from the heatpump controller. From the heatpump manual I learned that it was using a Luxtronic controller board (a kind of mini computer) that I could use to retrieve metrics. The documentation for this controller board was quite scarce but fortunately I found a [web page](https://loxwiki.atlassian.net/wiki/spaces/LOX/pages/1533935933/Java+Webinterface) documenting the available metrics, making it easier to determine whicht variables/metrics could be useful.
 
+* **Prometheus Metrics Database**. This is een open source database specially designed for storing metric data. It retrieves the sensor data form the prometheus exporter by calling the `/metrics` url of the program. In my case, a raspberry pi linux server was the host of the promotheus application, 24/7 active. The raspberry pi was used because it provides internet connection and enough storage for the prometheus application to run on. With this, the main program/ prometheus exporter program is also located on the raspberry. In short, the promtheus application is located in a raspberry pi, programmed to retrieve data from the prometheus exporter program each hour.
 
-## The heatpump data exporter (main program)
-In order to get the heatpump metrics in the prometheus metrics database I had to write a so called prometheus exporter program. This program convert the heatpump metrics into a format that prometheus understands.
+* **Grafana Dashboards**. This is also an open source solution for creating nice graphs/dashboards using the data inside the metrics database. In the example diagram below, you see a example what Grafana can creater without doing a lot of configuration. These diagrams are also automatically updated when new sensor data is stored in the prometheus metrics database.
 
-First I analysed the metrics that can be requested from the heatpump controller. From research and the heatpump manual I learned that it was using a Luxtronic controller board (a kind of mini computer) that I could use to retrieve metrics (which uses the programming language Luxtronik). Documentation for this controller board was quite scarce but fortunately I found a web page documenting the available metrics. Making it easy what variables/ metrics could be useful.
-
-### Prometheus Exporter
-Read Metric configuration and prometheus exporter program outline to understand how data was collected displayed so that promotheus understands.
-
-### Prometheus Metrics Database
-The prometheus application triggers each hour for the prometheus exporter program to run once. The collected data is send back to the application, since the promotheus program is programmed to return the data as response to computer searching the specific URL '/metrics'. When the prometheus program receives this information, this is than stored on the prometheus metric data base. In my case, a raspberry pi linux server was the host of the promotheus application, 24/7 active. The raspberry pi was used because it provides internet connection and enough storage for the prometheus application to run on. With this, the main program/ prometheus exporter program is also located on the raspberry. In short, the promtehus application is located in a raspberry pi, programmed to run the prometheus exporter program each hour.
-
-### Grafana Dashboards
-As explained in the small summary, Grafana fashbaords was soley used to display the data stored in the prometheus metrics database. In this diagram below, you see a example what Grafana had created without doing a lot input from myself. Althought these diagrams are not the best, manually it is hard to create graphs of a month data.
 ![boiler hotwater temperature](graphs/boiler_hotwater_temperature.png)
 
-## Raspberry Pi
-All components except the heatpump itself are running on a tiny raspberry pi linux server put in the fusebox of the house. On this raspberry pi, the prometheus exporter program, the prometheus application and the grafana dashboard program. Meaning everything when logging in the raspberry pi through its own ip-adress. All the inforamtion is already to be displayed in graphs in matter of couple clicks.
 
--- insert photo here --
+
+## Raspberry Pi
+All components except the heatpump itself are running on a tiny raspberry pi linux server put in the fusebox cupboard of the house. On this raspberry pi, the prometheus exporter program, the prometheus application and the grafana dashboard program. Meaning everything when logging in the raspberry pi through its own ip-adress. All the inforamtion is already to be displayed in graphs in matter of couple clicks.
+
+-- TODO: insert photo here --
+
 
 ## metric configuration 
-In the main program (prometheus exporter program) of the project, additional files were used because of the different reasons. One of these files contained the metrics used. Why? because it was easier to create/ configure the metrics in another file than have the metric configuration in the exporter program(main program). Which could create a lot of errors. Furthermore could the additional file for the metric configuration be written in another programming language. YAML was chosen because it is able to create configuration files with any programming language and designed for human readability.
+In the main program of the project, additional files were used because of the different reasons. One of these files contained the metrics used. Why? because it was easier to create/configure the metrics in another file than have the all metric configuration in the exporter program (main program). The latter could create a lot of errors and would not be easy to read and understand. 
+
+The separate file for the metric configuration also allowed me to use another format than python. YAML was chosen because it is a configuration file format that can used with many different programming languages and is designed for human readability. I ended up with the following metric configuration file
+
 
 https://github.com/m-swart/heatpump/blob/f0d0dfd7cc629cc823e801ce0b4e106fcd13a00b/metric.yml
 
-As you can see, YAML made it very easy to define to the program what were all the metrics through 'metrics:', and were the symbol minus '-' used to define each individual metric. 
+As you can see, YAML made it very easy to define the metrics that the program needs to collect. Each invidual metric starts with the minus symbol `-`: 
 
 ```yaml
 metrics:
   - name: heatpump_outdoor_temp_celcius
     key: ID_WEB_Temperatur_TA
     type: gauge
-- name: heatpump_operational_total_seconds
+  - name: heatpump_operational_total_seconds
     key: ID_WEB_Zaehler_BetrZeitWP
     type: counter
 ```
-As seen in the YAML file, each metrics consist out of a name, key and type. The name is just the name given to the metric to identify it. Looking at the example, from the name we can understand the metric is the outdoor temperature measured by the heatpump. The key is the essentially the name/ key the program needs to use when asking the heatpump for data about the outdoor temperature. This is because the heatpump uses a programming language called Luxtronik, and otherwise the heatpump would not know what the program is asking for. As last is the type, meaning the type of data. In the whole file, the only types are guage and counter. Guage is value which is able to decrease or increase, such as temperature. Counter is a value which only able to increase, such as age.
+As seen in the YAML file, each metrics consist out of a `name`, `key` and `type`. The `name` is just the name given to the metric to identify it. Looking at the example, from the name we can understand the metric is the outdoor temperature measured by the heatpump. 
+
+The `key` is the essentially the name/key the program needs to use when asking the heatpump for data about the outdoor temperature. This is because the heatpump uses a programming language called Luxtronik, and otherwise the heatpump would not know what the program is asking for. 
+
+The last element is the `type`, meaning the type of data. In the whole file, the only types are `guage` and `counter`. A guage is a value which can fluctuate over time, such as temperature. A counter is a value which can only increase. An example of a counter is time/age.
 These types are important to display with the data, because otherwise prometheus does not understand how to store the data.
 
 
-### Prometheus exporter program outline (read metric configuration first for better of program outline)
-I have written the Prometheus exporter program in Python. Main reason for using Python is that I was told it was easy to learn and that there already was a standard library available to allowed me to communicate with the heatpump controller.
+## Program explanation
+> Please read metric configuration section first for better understanding.
+
+I have written the Prometheus exporter program in Python. Main reason for using Python is that I was told it was easy to learn and that there already was a standard library available that would allow me to communicate with the heatpump controller.
 
 https://github.com/m-swart/heatpump/blob/89292fa02aeb39303c1c5cff3516f7b67c08f38e/heatpump.py#L1-L3
 
 
-The first three lines of code tell the program to install/ import certain libraries. So that the program understands what to do when referred to work with on the libraries further on the program. A library is a addiotional file of code to be imported to your own code. Benefits of this are that existing code can be reused.
+The first three lines of code tell the program to install/import certain libraries so that the program understands what to do when referred to work with on the libraries further in the program.
 
-For this program, in total 3 librariers were (pip3) installed and used. Library Luxtronik allows interaction between the heatpump controller, essential to collect data. Flask is a web application framework for local/ small uses, fask can create a website on your own IP adress, which could serve as a place to display data. Yaml is a library that helps with reading configuration files in the [YAML](https://en.wikipedia.org/wiki/YAML) format.
+A library is a addiotional file of code to be imported to your own code. This way the can reuse code written by others.
+
+For this program, in total 3 librariers were installed and used using the pip3 python command. Library `Luxtronik` allows interaction with the heatpump controller and collect it's data. `Flask` is a web application framework for local/small usage. Flask can create a website on your own IP adress, which could serve as a place to display data. `Yaml` is a library that helps with reading configuration files in the [YAML](https://en.wikipedia.org/wiki/YAML) format.
 
 
-Having installed the libraries needed for this project. The thing missing to complete the set-up for the program to understand the code.
 
-One of the missing things is the YAML file containing the variables the program has to collect data about (through asking the heatpump).
+Having installed the libraries needed for this project we start reading the YAML file containing the metrics the program has to collect from the heatpump.
+
 https://github.com/m-swart/heatpump/blob/89292fa02aeb39303c1c5cff3516f7b67c08f38e/heatpump.py#L5-L7
-Line 5 is a #comment, adding no meaning to the code. However in Line 6, the code tells te program to open a local file called metric.yml --> with premission only to preview through 'r'. Standing for reading. 
-Line 7 is a follow up to Line 6 telling the program to safeload/ preview and understand the data. Caused by '='. telling the program to view the data, through using the yaml library.
 
-Everytime the program is to perform a new action, not a follow up to prior lines of code. A new "paragraph" is used, so it is clear which paragraph does what.
+Line 5 is a `#comment`, adding no meaning to the code. However in Line 6, the code tells te program to open a local file called metric.yml --> with permission `r`, implying that the program is only allow to read the file and not to modify it. 
+Line 7 is a follow up to Line 6 telling the program to safeload/ preview and parse the data using the yaml library.
+
+Everytime the program is to perform a new action, not a follow up to prior lines of code. A new "paragraph" (indentation) is used, so it is clear which paragraph does what.
 https://github.com/m-swart/heatpump/blob/89292fa02aeb39303c1c5cff3516f7b67c08f38e/heatpump.py#L9
+
 Line 9 is a function, defined by '='. It is a widely used function asking the program to create a Flask application using Flask. The code essentially tells the library to use library 'Flask' --> and current location of program '__name__' to create a 'app', or application.
 
-The main and last part of the code is essentially a loop, to collect data of each variable listed in 'metric.yml. Containing all the variables needed to collect. The YAML will be explained later on.
+The main and last part of the code is essentially a loop, to collect data of each metric listed in previously explained `metric.yml` file. 
 https://github.com/m-swart/heatpump/blob/89292fa02aeb39303c1c5cff3516f7b67c08f38e/heatpump.py#L11-L22
-Line 11 is the trigger for the loop L12-L22 to happen.Line 11 creates a specific URL/ app route so the application knows when to handle incoming web request. When that specific URL '/metrics' is executed, Line 12 creates a function called metrics. Which is followed by a loop defined by ':' and how the following lines are spaced more to the right/ connected to the function. The program ingores Line 13 since it is a #comment. Line 14 asks the program to connect to a heatpump. Using 'Luxtronik' and the local ip-adress to connect. Since it is a fucntion, the code asks the program to perform the next lines using the knowledge it needs to use Luxtronik to communicate with the heatpump. 
 
-```yaml
-metrics:
-  - name: heatpump_outdoor_temp_celcius
-    key: ID_WEB_Temperatur_TA
-    type: gauge
-```
-Line 15 tells the program to prepare a response text to the computer requesting the URL. ("") The response is still blank. So, Line 16 ask the program to get collect data for each individual metric in 'metrics.yml' from the heatpump. Lines 16 does this by creating a loop of L17-19. The program is able to identify each individual metric with the use of -. Line 17 ask to program to find the value of that metric. Through using the key of that metric. For isntance using the example of the metric above. The program, already connected to the heatpump (since L12-L22 is a loop). Asks the heatpump the value of key ID_WEB_Temperatur_TA using Luxtronik. Nothing is yet done with the response, but remember it.
+Line 11 is the trigger for the loop L12-L22 to happen. Line 11 creates a specific URL/ app route so the application knows when to handle incoming web request. When that specific URL `/metrics` is requested Flask executes the function called `metrics`. The program ingnores Line 13 since it is a #comment. Line 14 asks the program to connect to a heatpump, using 'Luxtronik' and the local ip-adress to connect. 
 
-In Line 18, the program is asked to begin writing a response to be added in the blank space of line 15 ("") through 'metric_text +='. The program is asked to add  '# TYPE {0} {1}\n' to the reponse. {0} {1} are "strings". Whereas {0} represents the code 'metric['name']', and {1} represents 'metric['type']'. Which both have the program look in the YAML file. The reason why {0} and {1} reperesent something is becasue of '.format' a rule in phyton creating these representations. The /n after {1} makes the program create a new line if something else would be added to the response later on.
+Line 15 tells the program to prepare a response text for the metrics. ("") The response is still blank. So, Line 16 ask the program to get collect data for each individual metric in 'metrics.yml' from the heatpump. Lines 16 does this by creating a loop of L17-19. The program is able to identify each individual metric with the use of it's `-` prefix in the configuration file. Line 17 ask to program to find the value of that metric using the key of that metric. For example the value of key `ID_WEB_Temperatur_TA` using the Luxtronik library. Nothing is yet done with the response, is only stored in memory.
+
+In Line 18, the program is asked to begin writing a response to be added in the blank space of line 15 ("") through 'metric_text +='. The program is asked to add  '# TYPE {0} {1}\n' to the reponse. {0} {1} are "strings". Whereas {0} represents the code 'metric['name']', and {1} represents 'metric['type']', both coming from the YAML file. The reason why {0} and {1} reperesent something is becasue of '.format' a rule in phyton creating these representations. The /n after {1} makes the program create a new line if something else would be added to the response later on.
 
 
 Using the example above, response of Line 18 is this: 
@@ -115,7 +126,7 @@ Using the example above, the response from whole loop of L17-L19 creates this (e
 heatpump_outdoor_temp_celcius 8.9
 ```
 
-Line 20 tells the program to make 'metric_text' the final response to the request. This response contains the work of L17-L19 of all the metrics in metric.yml because it is a loop of L16. Whereas this final response display is changed in Line 21. Although changing the format of the letters does not change anyhting to the program. When checking if the program was working, this format was easier to read.
+Line 20 tells the program to make `metric_text` the final response to the request. This response contains the work of L17-L19 of all the metrics in metric.yml because it is a loop of L16. Whereas this final response display is changed in Line 21. Although changing the format of the letters does not change anyhting to the program. When checking if the program was working, this format was easier to read.
 
 Line 22 is the end of the loop. Where the program is told to send the final response to the computer requesting using Flask.
 
@@ -157,9 +168,7 @@ heatpump_compressor_impulses 37643
 ```
 
 
-
 ## Things I learned from this project
-
 * Making simple programs in Python
 * Working with GIT version control system
 * Creating dashboards in Grafana
