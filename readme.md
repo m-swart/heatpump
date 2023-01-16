@@ -2,7 +2,7 @@
 
 
 ## Introduction
-The MYP personal project is a long term project held in grade 10. In the project, we should explore something which inspires or intrests us. My learning goal of this project is to program and be able to process, analyse/ draw conclusions from data. Furthermore would I like to test my learning goal by creating a program which is able to store the data from my home heat pump, creating dashboards from the data and by writing a short report analysing the trends that can be derived from the dashboards.
+The MYP personal project is a long term project held in grade 10. In the project, we should explore something which inspires or interests us. My learning goal of this project is to program and be able to process, analyse/ draw conclusions from data. Furthermore would I like to test my learning goal by creating a program which is able to store the data from my home heat pump, creating dashboards from the data and by writing a short report analysing the trends that can be derived from the dashboards.
 
 I have chosen to upload the program and its documentation on Github, because it is serves as evidence and it is easy to explain the program using this platform. Furthermore can it be useful for others, whom perphaps want to observe their heatpump's performance.
 
